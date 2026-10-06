@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Uma pergunta importante</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  --bg1:#dff1ff; --bg2:#e6dcff; --card:rgba(255,255,255,.75);
+  --ink:#4b3a8f; --soft:#7a6cc0; --sim:#8e6bf0; --nao:#7fc4f5; --nao-ink:#16406a;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg1:#14213a; --bg2:#241b45; --card:rgba(255,255,255,.08);
+    --ink:#e6dcff; --soft:#b9c9f5; --sim:#a083ff; --nao:#5aa8e0; --nao-ink:#0d2238;
+  }
+}
+:root[data-theme="dark"]{
+  --bg1:#14213a; --bg2:#241b45; --card:rgba(255,255,255,.08);
+  --ink:#e6dcff; --soft:#b9c9f5; --sim:#a083ff; --nao:#5aa8e0; --nao-ink:#0d2238;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{
+  font-family:"Fredoka",system-ui,sans-serif;
+  background:linear-gradient(160deg,var(--bg1),var(--bg2));
+  color:var(--ink);
+  display:flex;align-items:center;justify-content:center;
+  padding:16px;
+}
+.card{
+  width:100%;max-width:440px;background:var(--card);
+  border-radius:28px;padding:36px 24px;text-align:center;
+  backdrop-filter:blur(6px);
+}
+h1{font-size:clamp(1.6rem,6vw,2.1rem);line-height:1.25;margin:0 0 8px;font-weight:600}
+p{color:var(--soft);font-size:1.1rem;line-height:1.5;margin:0}
+.stage{position:relative;height:220px;margin-top:24px}
+button{
+  font-family:inherit;font-size:1.15rem;font-weight:600;border:0;cursor:pointer;
+  border-radius:999px;padding:14px 34px;touch-action:manipulation;
+}
+#sim{background:var(--sim);color:#fff;position:absolute;left:8%;top:20px;transition:transform .15s}
+#sim:hover{transform:scale(1.06)}
+#nao{background:var(--nao);color:var(--nao-ink);position:absolute;right:8%;top:20px;transition:left .25s,top .25s,right .25s}
+button:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+.hidden{display:none}
+.emojis{font-size:2.6rem;margin:18px 0 6px;letter-spacing:.2em}
+@media (prefers-reduced-motion:reduce){#nao,#sim{transition:none}}
+</style>
+</head>
+<body>
+<main class="card">
+  <section id="p1">
+    <h1>Você quer ser minha pra sempre?</h1>
+    <p>Pense bem antes de responder.</p>
+    <div class="stage" id="stage">
+      <button id="sim">Sim</button>
+      <button id="nao">Não</button>
+    </div>
+  </section>
+
+  <section id="p2" class="hidden">
+    <div class="emojis">💜🌷🍫</div>
+    <h1>Parabéns!</h1>
+    <p>Isso te dá direito a muitos beijos, flores e chocolates por tempo indeterminado. Aproveite!</p>
+  </section>
+</main>
+
+<script>
+const stage = document.getElementById('stage');
+const nao = document.getElementById('nao');
+const sim = document.getElementById('sim');
+
+function fugir(e){
+  if(e) e.preventDefault();
+  const s = stage.getBoundingClientRect();
+  const b = nao.getBoundingClientRect();
+  const sb = sim.getBoundingClientRect();
+  let x, y, tries = 0;
+  do {
+    x = Math.random() * (s.width - b.width);
+    y = Math.random() * (s.height - b.height);
+    tries++;
+  } while (tries < 20 &&
+    x + b.width > sb.left - s.left - 8 && x < sb.right - s.left + 8 &&
+    y + b.height > sb.top - s.top - 8 && y < sb.bottom - s.top + 8);
+  nao.style.right = 'auto';
+  nao.style.left = x + 'px';
+  nao.style.top = y + 'px';
+}
+
+// Foge ao passar o mouse, ao tocar e ao clicar; nunca avança
+['pointerenter','pointerdown','touchstart','click'].forEach(ev =>
+  nao.addEventListener(ev, fugir, {passive:false}));
+
+sim.addEventListener('click', () => {
+  document.getElementById('p1').classList.add('hidden');
+  document.getElementById('p2').classList.remove('hidden');
+});
+</script>
+</body>
+</html>
